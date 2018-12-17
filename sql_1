@@ -9,9 +9,8 @@ Sample Input
 /*
 Enter your query here.
 */
-select n, case when (p IS NULL) then "Root" when (n not in (select distinct(p) from BST as b)) IS NULL then "Leaf" else "Inner" end from BST order by N;
-                                                            
-select n, case when p is null then "Root"
+ 
+select n, case when p is null then "Root"select
                when n not in (select distinct p from bst) then "leaf"    
                else "inner"        
            end case
