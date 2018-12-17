@@ -10,9 +10,32 @@ Sample Input
 Enter your query here.
 */
  
-select n, case when p is null then "Root"select
-               when n not in (select distinct p from bst) then "leaf"    
-               else "inner"        
-           end case
+select
+    BST.N
+    ,case
+        when BST.P is null then 'Root'
+        when not exists (select 1 from BST as BST_Search where BST.N = BST_Search.P) then 'Leaf'
+        else 'Inner'
+    end as NodeType
 from BST
-order by n     
+order by N
+
+
+2. 
+SELECT  c.company_code,
+        c.founder,
+       count(distinct lm.lead_manager_code),
+       count(distinct sm.senior_manager_code),
+       count(distinct m.manager_code),
+       count(distinct e.employee_code)
+FROM company c 
+    left join lead_manager lm
+    on c.company_code = lm.company_code
+        left join senior_manager sm
+        on c.company_code = sm.company_code
+            left join manager m
+            on c.company_code = m.company_code
+                left join employee e
+                on c.company_code = e.company_code
+GROUP BY c.company_code , c.founder
+ORDER BY c.company_code;
