@@ -39,3 +39,25 @@ FROM company c
                 on c.company_code = e.company_code
 GROUP BY c.company_code , c.founder
 ORDER BY c.company_code;
+
+3.Delete dups 
+
+DELETE
+FROM sales
+WHERE rowid IN
+  (SELECT rid
+  FROM
+    (SELECT rowid rid,
+      id,
+      salesman_id,
+      sales_item,
+      sales_num,
+      sales_price,
+      DATETIME,
+      row_number() over (partition BY salesman_id,sales_item,sales_num,sales_price order by id) r_flag
+    FROM sales
+    WHERE EXTRACT(MONTH FROM DATETIME) = 3
+    AND SALESMAN_ID                    = 40
+    )
+  WHERE r_flag != 1
+  );
