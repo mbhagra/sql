@@ -61,3 +61,70 @@ WHERE rowid IN
     )
   WHERE r_flag != 1
   );
+
+
+refer:
+ https://academy.vertabelo.com/blog/common-sql-window-functions-partitions-ranking-functions/
+ 
+ /*****Ranking ovder sums *****/
+ 
+ 1. 
+Query 1:
+
+SELECT Age,
+       Qualification,
+       Income,
+       RANK() OVER ( PARTITION BY Age, Qualification ORDER BY Income DESC ) AS "Rank"
+FROM   Employees
+Results:
+
+| AGE | QUALIFICATION | INCOME | Rank |
+|-----|---------------|--------|------|
+|  19 |          Grad |   5000 |    1 |
+|  19 |          Grad |   4000 |    2 |
+|  19 |          Grad |   3000 |    3 |
+|  26 |          Grad |   6000 |    1 |
+|  26 |          Grad |   5000 |    2 |
+|  26 |          PosG |   8000 |    1 |
+|  26 |          PosG |   6000 |    2 |
+Query 2:
+
+WITH total_incomes AS (
+  SELECT Age,
+         Qualification,
+         SUM( Income ) AS total_income
+  FROM   Employees
+  GROUP BY
+         Age,
+         Qualification
+)
+SELECT Age,
+       Qualification,
+       total_income,
+       RANK() OVER ( ORDER BY total_income DESC ) AS "Rank"
+FROM   total_incomes
+Results:
+
+| AGE | QUALIFICATION | TOTAL_INCOME | Rank |
+|-----|---------------|--------------|------|
+|  26 |          PosG |        14000 |    1 |
+|  19 |          Grad |        12000 |    2 |
+|  26 |          Grad |        11000 |    3 |
+shareimprove this answer
+edited Jul 23 '15 at 9:29
+answered Jul 23 '15 at 9:23
+
+MT0
+51.8k52756
+add a comment
+
+up vote
+0
+down vote
+select  age,qualification,total_income
+row_number() over (partition by age,qualification order by income desc) as rank from
+(
+Select age,qualification,sum(income) as total_income  from employee
+group by age,qualification
+) T1
+ 
